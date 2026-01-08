@@ -23,6 +23,8 @@ Avant de lancer le projet, assurez-vous d'avoir installé :
 
 1.  **Python** (version 3.8 ou supérieure).
 2.  **Ollama** : Téléchargeable sur [ollama.com](https://ollama.com).
+3.  **Streamlit** : Permet de crée une interface utilisateur
+4.  **Fichier Python*** : créer un fichier app.py avec un prompt adapter a votre besoin
 
 ## **Démarrer le service Ollama**
 

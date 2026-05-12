@@ -19,7 +19,8 @@
             </div>
         </div>
         <form action="/" method="GET" class="mb-12">
-    <div class="flex flex-col md:flex-row gap-4 bg-white p-3 shadow-xl rounded-2xl border border-slate-100">
+    <div class="flex flex-col gap-3 bg-white p-3 shadow-xl rounded-2xl border border-slate-100">
+        <div class="flex flex-col md:flex-row gap-4">
         
         <div class="relative min-w-[200px]">
             <select name="file" class="w-full h-full pl-10 pr-4 py-4 bg-slate-50 border-0 rounded-xl text-slate-600 font-semibold appearance-none focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">
@@ -41,6 +42,11 @@
         <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg shadow-indigo-100 whitespace-nowrap">
             <i class="fas fa-bolt mr-2"></i> Scanner
         </button>
+        </div>
+        <label class="inline-flex items-center gap-2 px-2 text-sm text-slate-600 font-medium cursor-pointer select-none">
+            <input id="toggleBlur" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked>
+            Flouter les données sensibles (nom, prénom, etc.)
+        </label>
     </div>
     </form>
         {{if .HasSearched}}
@@ -65,14 +71,14 @@
                     </div>
 
                     <div class="bg-slate-900 rounded-lg p-4 mb-4">
-                        <code class="text-indigo-300 text-sm break-all font-mono">
+                        <code class="text-indigo-300 text-sm break-all font-mono" data-sensitive="true">
                             {{.Line}}
                         </code>
                     </div>
 
                     <div class="flex flex-wrap gap-2">
                         {{range .Extras}}
-                        <span class="text-[11px] bg-slate-50 text-slate-500 border border-slate-200 px-2 py-0.5 rounded italic">
+                        <span class="text-[11px] bg-slate-50 text-slate-500 border border-slate-200 px-2 py-0.5 rounded italic" data-sensitive="true">
                             {{.}}
                         </span>
                         {{end}}
@@ -89,5 +95,35 @@
         {{end}}
 
     </div>
+    <script>
+        function maskSensitiveText(text) {
+            return text.replace(/[A-Za-zÀ-ÖØ-öø-ÿ]{4,}/g, function (word) {
+                var start = word.slice(0, 2);
+                var end = word.slice(-1);
+                var middleLength = Math.max(word.length - 3, 1);
+                return start + "•".repeat(middleLength) + end;
+            });
+        }
+
+        function applyBlurState(isBlurEnabled) {
+            var sensitiveNodes = document.querySelectorAll("[data-sensitive='true']");
+            sensitiveNodes.forEach(function (node) {
+                if (!node.dataset.rawValue) {
+                    node.dataset.rawValue = node.textContent.trim();
+                }
+                node.textContent = isBlurEnabled
+                    ? maskSensitiveText(node.dataset.rawValue)
+                    : node.dataset.rawValue;
+            });
+        }
+
+        var blurToggle = document.getElementById("toggleBlur");
+        if (blurToggle) {
+            applyBlurState(blurToggle.checked);
+            blurToggle.addEventListener("change", function () {
+                applyBlurState(blurToggle.checked);
+            });
+        }
+    </script>
 </body>
 </html>

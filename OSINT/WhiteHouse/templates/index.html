@@ -60,12 +60,14 @@
                         </span>
                         {{if .Email}}
                         <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-md text-xs font-bold">
-                            <i class="fas fa-envelope mr-1"></i> {{.Email}}
+                            <i class="fas fa-envelope mr-1"></i>
+                            <span data-sensitive="true">{{.Email}}</span>
                         </span>
                         {{end}}
                         {{if .IP}}
                         <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-md text-xs font-bold">
-                            <i class="fas fa-network-wired mr-1"></i> {{.IP}}
+                            <i class="fas fa-network-wired mr-1"></i>
+                            <span data-sensitive="true">{{.IP}}</span>
                         </span>
                         {{end}}
                     </div>
@@ -97,11 +99,15 @@
     </div>
     <script>
         function maskSensitiveText(text) {
-            return text.replace(/[A-Za-zÀ-ÖØ-öø-ÿ]{4,}/g, function (word) {
+            var maskedText = text.replace(/([A-Za-z0-9._%+-])[A-Za-z0-9._%+-]*@([A-Za-z0-9.-]+\.[A-Za-z]{2,})/g, function (_, firstChar, domain) {
+                return firstChar + "****@" + domain;
+            });
+
+            return maskedText.replace(/[A-Za-zÀ-ÖØ-öø-ÿ]{4,}/g, function (word) {
                 var start = word.slice(0, 2);
                 var end = word.slice(-1);
                 var middleLength = Math.max(word.length - 3, 1);
-                return start + "•".repeat(middleLength) + end;
+                return start + "*".repeat(middleLength) + end;
             });
         }
 
